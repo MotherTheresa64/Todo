@@ -61,76 +61,204 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 // --- ANIMATION KEYFRAMES ---
-// Keyframes for card entrance, button pop, shimmer, FAB pulse, and confetti
+// Enhanced keyframes for modern, smooth animations
 const cardEntrance = keyframes`
-  from { opacity: 0; transform: translateY(32px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { 
+    opacity: 0; 
+    transform: translateY(24px) scale(0.96); 
+    filter: blur(4px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    filter: blur(0px);
+  }
 `;
+
+const slideInFromRight = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+const slideOutToRight = keyframes`
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+`;
+
 const buttonPop = keyframes`
   0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 `;
+
 const shimmer = keyframes`
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 `;
+
 const fabPulse = keyframes`
-  0%, 100% { box-shadow: 0 4px 16px #b7d89c55; }
-  50% { box-shadow: 0 8px 32px #b7d89c99; }
+  0%, 100% { 
+    box-shadow: 0 8px 32px rgba(183, 216, 156, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 12px 48px rgba(183, 216, 156, 0.6);
+    transform: scale(1.02);
+  }
 `;
+
 const confettiBurst = keyframes`
-  0% { opacity: 1; transform: scale(0.5) translateY(0); }
-  80% { opacity: 1; transform: scale(1.2) translateY(-40px); }
-  100% { opacity: 0; transform: scale(1.2) translateY(-60px); }
+  0% { 
+    opacity: 1; 
+    transform: scale(0.5) translateY(0) rotate(0deg); 
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) translateY(-30px) rotate(180deg);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(1.4) translateY(-60px) rotate(360deg); 
+  }
+`;
+
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+`;
+
+const glowPulse = keyframes`
+  0%, 100% { box-shadow: 0 0 5px rgba(183, 216, 156, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(183, 216, 156, 0.6), 0 0 30px rgba(183, 216, 156, 0.4); }
+`;
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const scaleIn = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 `;
 
 // --- STYLED COMPONENTS ---
-// Layout containers and UI elements, styled for the "Green Productivity" theme
+// Modern layout containers with enhanced mobile support
 const PageContainer = styled.div`
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 24px 0 60px 0;
+  padding: clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px) clamp(80px, 20vw, 120px);
   box-sizing: border-box;
-  width: 100vw;
-  overflow-x: hidden;
-`;
-// Row for date and progress cards at the top
-const CardRow = styled.div`
-  display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
   width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
-  @media (max-width: 700px) {
-    flex-direction: column;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  
+  /* Smooth scroll behavior */
+  scroll-behavior: smooth;
+  
+  /* Better touch scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  
+  @media (max-width: 768px) {
+    padding: 16px 12px 100px;
+    gap: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 8px 100px;
     gap: 12px;
-    align-items: stretch;
-    max-width: 98vw;
   }
 `;
-// Card container for todos and summary
+// Enhanced card row with modern responsive design
+const CardRow = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(16px, 4vw, 24px);
+  margin-bottom: clamp(20px, 5vw, 32px);
+  width: 100%;
+  max-width: min(600px, calc(100vw - 24px));
+  box-sizing: border-box;
+  
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: calc(100vw - 16px);
+  }
+  
+  @media (max-width: 480px) {
+    gap: 12px;
+    max-width: calc(100vw - 12px);
+  }
+`;
+// Enhanced card container with modern glass-morphism effect
 const TodoCard = styled.div`
   width: 100%;
-  max-width: 600px;
-  align-items: stretch;
+  max-width: min(600px, calc(100vw - 24px));
   min-width: 0;
-  margin-bottom: 32px;
+  margin-bottom: clamp(24px, 6vw, 40px);
   box-sizing: border-box;
-  overflow-x: hidden;
-  padding: 36px 24px 44px 24px;
-  border-radius: 16px;
+  overflow: hidden;
+  padding: clamp(24px, 6vw, 36px) clamp(16px, 4vw, 24px) clamp(32px, 8vw, 44px);
+  border-radius: clamp(16px, 4vw, 20px);
   box-shadow: ${({ theme }) => theme.cardShadow};
   background: ${({ theme }) => theme.card};
   border: ${({ theme }) => theme.cardBorder};
-  @media (max-width: 700px) {
-    padding: 18px 8px 32px 8px;
-    max-width: 98vw;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Subtle glass effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Hover effects for desktop */
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 
+                  0 4px 16px rgba(183, 216, 156, 0.1);
+    }
+  }
+  
+  /* Enhanced mobile styles */
+  @media (max-width: 640px) {
+    max-width: calc(100vw - 16px);
+    padding: 20px 16px 28px;
+    border-radius: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    max-width: calc(100vw - 12px);
+    padding: 16px 12px 24px;
+    border-radius: 14px;
   }
 `;
 const DateCircle = styled.div`
@@ -211,87 +339,201 @@ const TodoInputRow = styled.form`
 `;
 const TodoInput = styled.input`
   flex: 2 1 120px;
-  padding: 16px 12px;
+  padding: clamp(14px, 4vw, 18px) clamp(12px, 3vw, 16px);
   border: none;
-  border-radius: 12px;
-  font-size: 1.1em;
-  font-family: inherit;
-  background: #232e1b;
-  color: #f6f7f2;
-  box-shadow: 0 1px 2px #1a1f1433;
+  border-radius: clamp(10px, 3vw, 14px);
+  font-size: clamp(1.05em, 3vw, 1.2em);
+  font-family: 'Inter', inherit;
+  font-weight: 400;
+  background: ${({ theme }) => theme.input};
+  color: ${({ theme }) => theme.text};
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  @media (max-width: 700px) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Enhanced focus state */
+  &:focus {
+    outline: none;
+    box-shadow: 
+      0 4px 16px rgba(183, 216, 156, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  /* Placeholder styling */
+  &::placeholder {
+    color: ${({ theme }) => theme.text3};
+    opacity: 0.7;
+  }
+  
+  @media (max-width: 640px) {
     width: 100%;
-    font-size: 1.18em;
-    padding: 18px 12px;
+    font-size: 1.1em;
+    padding: 16px 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.05em;
+    padding: 14px 12px;
   }
 `;
 const DateInput = styled.input`
   flex: 1 1 80px;
-  padding: 16px 12px;
+  padding: clamp(14px, 4vw, 18px) clamp(12px, 3vw, 16px);
   border: none;
-  border-radius: 12px;
-  font-size: 1em;
-  font-family: inherit;
-  background: #232e1b;
-  color: #f6f7f2;
-  box-shadow: 0 1px 2px #1a1f1433;
+  border-radius: clamp(10px, 3vw, 14px);
+  font-size: clamp(0.95em, 2.5vw, 1.1em);
+  font-family: 'Inter', inherit;
+  font-weight: 400;
+  background: ${({ theme }) => theme.input};
+  color: ${({ theme }) => theme.text};
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  @media (max-width: 700px) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:focus {
+    outline: none;
+    box-shadow: 
+      0 4px 16px rgba(183, 216, 156, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  @media (max-width: 640px) {
     width: 100%;
-    font-size: 1.13em;
-    padding: 18px 12px;
+    font-size: 1.05em;
+    padding: 16px 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1em;
+    padding: 14px 12px;
   }
 `;
+
 const PrioritySelect = styled.select`
   flex: 1 1 80px;
-  padding: 16px 12px;
+  padding: clamp(14px, 4vw, 18px) clamp(12px, 3vw, 16px);
   border: none;
-  border-radius: 12px;
-  font-size: 1em;
-  font-family: inherit;
-  background: #232e1b;
-  color: #f6f7f2;
-  box-shadow: 0 1px 2px #1a1f1433;
+  border-radius: clamp(10px, 3vw, 14px);
+  font-size: clamp(0.95em, 2.5vw, 1.1em);
+  font-family: 'Inter', inherit;
+  font-weight: 400;
+  background: ${({ theme }) => theme.input};
+  color: ${({ theme }) => theme.text};
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  @media (max-width: 700px) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  
+  &:focus {
+    outline: none;
+    box-shadow: 
+      0 4px 16px rgba(183, 216, 156, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  @media (max-width: 640px) {
     width: 100%;
-    font-size: 1.13em;
-    padding: 18px 12px;
+    font-size: 1.05em;
+    padding: 16px 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1em;
+    padding: 14px 12px;
   }
 `;
 const AddButton = styled.button`
-  background: #b7d89c;
+  background: ${({ theme }) => theme.accent};
   border: none;
-  border-radius: 14px;
-  padding: 0 22px;
-  font-size: 1.7em;
-  font-family: inherit;
+  border-radius: clamp(12px, 3vw, 16px);
+  padding: 0 clamp(18px, 5vw, 24px);
+  font-size: clamp(1.4em, 4vw, 1.8em);
+  font-family: 'Inter', inherit;
   font-weight: 700;
   color: #232e1b;
-  box-shadow: 0 2px 8px #b7d89c55, 1px 2px 0 #3d4d2e;
+  box-shadow: 
+    0 4px 16px rgba(183, 216, 156, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 54px;
-  min-height: 54px;
-  height: 54px;
+  min-width: clamp(48px, 12vw, 56px);
+  min-height: clamp(48px, 12vw, 56px);
+  height: clamp(48px, 12vw, 56px);
   box-sizing: border-box;
-  @media (max-width: 700px) {
+  position: relative;
+  overflow: hidden;
+  
+  /* Hover and active states */
+  &:hover {
+    background: ${({ theme }) => theme.accent2};
+    color: #fff;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      0 8px 32px rgba(183, 216, 156, 0.5),
+      0 4px 16px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  /* Ripple effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: width 0.3s, height 0.3s;
+    transform: translate(-50%, -50%);
+  }
+  
+  &:active::before {
+    width: 120%;
+    height: 120%;
+  }
+  
+  @media (max-width: 640px) {
     min-width: 100%;
     min-height: 48px;
     height: 48px;
     font-size: 1.3em;
+    border-radius: 14px;
   }
-  &:hover { background: #a3c47c; color: #fff; box-shadow: 0 4px 16px #a3c47c55; }
+  
+  @media (max-width: 480px) {
+    font-size: 1.2em;
+    min-height: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
 `;
 // Redesigned FilterBar for dropdown filters
 const FilterBar = styled.div`
@@ -486,26 +728,77 @@ function getDayMonthYear() {
   };
 }
 const FabButton = styled.button`
-  display: none;
-  @media (max-width: 700px) {
-    display: flex;
-    position: fixed;
-    bottom: 32px;
-    right: 24px;
-    z-index: 300;
-    background: #b7d89c;
-    color: #232e1b;
-    border: none;
+  position: fixed;
+  bottom: clamp(20px, 5vw, 32px);
+  right: clamp(16px, 4vw, 24px);
+  z-index: 300;
+  background: ${({ theme }) => theme.fab};
+  color: #232e1b;
+  border: none;
+  border-radius: 50%;
+  width: clamp(56px, 15vw, 64px);
+  height: clamp(56px, 15vw, 64px);
+  font-size: clamp(1.8em, 5vw, 2.4em);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Enhanced shadow and glow effect */
+  box-shadow: 
+    0 8px 32px rgba(183, 216, 156, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  /* Backdrop blur for glass effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Floating animation */
+  animation: ${floatAnimation} 3s ease-in-out infinite;
+  
+  /* Active and hover states */
+  &:hover {
+    background: ${({ theme }) => theme.accent2};
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 
+      0 12px 48px rgba(183, 216, 156, 0.6),
+      0 6px 24px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+  }
+  
+  /* Focus state for accessibility */
+  &:focus-visible {
+    outline: 3px solid ${({ theme }) => theme.accent};
+    outline-offset: 3px;
+  }
+  
+  /* Pulse animation for attention */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 2.2em;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 16px #1a1f1440;
-    cursor: pointer;
-    transition: background 0.2s;
-    &:hover { background: #a3c47c; color: #fff; }
+    background: radial-gradient(circle, rgba(183, 216, 156, 0.3) 0%, transparent 70%);
+    animation: ${glowPulse} 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  /* Hide on very small screens to prevent interference */
+  @media (max-width: 320px) {
+    width: 48px;
+    height: 48px;
+    font-size: 1.6em;
+    bottom: 16px;
+    right: 12px;
   }
 `;
 const ModalOverlay = styled.div`
@@ -514,19 +807,50 @@ const ModalOverlay = styled.div`
   justify-content: center;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(35, 46, 27, 0.85);
+  background: rgba(35, 46, 27, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 400;
+  padding: 16px;
+  box-sizing: border-box;
+  
+  /* Smooth fade-in animation */
+  animation: ${fadeInUp} 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  @media (max-width: 480px) {
+    padding: 8px;
+    align-items: flex-end;
+  }
 `;
+
 const ModalCard = styled.div`
-  background: #2e3b25;
-  border-radius: 24px;
-  box-shadow: 0 4px 24px #1a1f14aa;
-  padding: 32px 18px 24px 18px;
-  width: 95vw;
-  max-width: 400px;
+  background: ${({ theme }) => theme.card || '#2e3b25'};
+  border-radius: clamp(16px, 4vw, 24px);
+  box-shadow: 
+    0 20px 64px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: clamp(24px, 6vw, 32px) clamp(16px, 4vw, 24px);
+  width: 100%;
+  max-width: min(420px, calc(100vw - 32px));
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  position: relative;
+  
+  /* Glass morphism effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Scale-in animation */
+  animation: ${scaleIn} 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  @media (max-width: 480px) {
+    max-width: calc(100vw - 16px);
+    border-radius: 16px 16px 0 0;
+    margin-top: auto;
+  }
 `;
 const ModalClose = styled.button`
   background: none;
@@ -648,27 +972,18 @@ const ShimmerProgressBar = styled.div`
   animation: ${shimmer} 2.5s linear infinite;
 `;
 const AnimatedFabButton = styled(FabButton)`
-  animation: ${fabPulse} 2.2s infinite;
-  background: ${({ theme }) => theme.fab};
-  box-shadow: ${({ theme }) => theme.fabShadow};
-  color: #232e1b;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 1.6em;
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  line-height: 1;
-  font-weight: 700;
-  text-align: center;
-  &:hover { background: ${({ theme }) => theme.accent2}; color: #fff; }
+  /* Additional pulse animation for extra attention */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(183, 216, 156, 0.2) 0%, transparent 60%);
+    animation: ${fabPulse} 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
   span {
     display: flex;
     align-items: center;
@@ -743,10 +1058,19 @@ const Card = styled.div`
   }
 `;
 
-// Animated card for entrance animation on cards (date, progress, main todo)
+// Animated card component with staggered entrance
 const AnimatedCard = styled.div`
-  animation: ${cardEntrance} 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity, transform;
+  animation: ${cardEntrance} 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: ${props => props.delay || '0ms'};
+  will-change: transform, opacity;
+  
+  &:nth-child(1) { animation-delay: 0ms; }
+  &:nth-child(2) { animation-delay: 100ms; }
+  &:nth-child(3) { animation-delay: 200ms; }
+  
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
 // --- MAIN TODO PAGE COMPONENT ---
@@ -920,12 +1244,12 @@ function TodoPage() {
       <PageContainer style={{ background: vars.bg }}>
         <CardRow>
           {/* Date and progress cards */}
-          <AnimatedCard as={Card} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
+          <AnimatedCard as={Card} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars} delay="0ms">
             <DateText style={{ color: vars.text2 }}>{day}</DateText>
             <DateCircle style={{ background: vars.accent2, color: vars.text }}>{date}</DateCircle>
             <MonthText style={{ color: vars.text3 }}>{month}</MonthText>
           </AnimatedCard>
-          <AnimatedCard as={ProgressCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
+          <AnimatedCard as={ProgressCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars} delay="100ms">
             <ProgressLabel style={{ color: vars.text2 }}>Progression</ProgressLabel>
             <ProgressBarContainer style={{ background: vars.filter }}>
               <ShimmerProgressBar $percent={percent} />
@@ -978,7 +1302,7 @@ function TodoPage() {
           </ModalOverlay>
         )}
         {/* Main todo card with input, filters, list, and finish day */}
-        <AnimatedCard as={TodoCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
+        <AnimatedCard as={TodoCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars} delay="200ms">
           {/* Input row for adding todos */}
           <TodoInputRow
             onSubmit={handleAdd}

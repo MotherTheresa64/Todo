@@ -3,12 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#b7d89c" />
+    <meta name="description" content="A modern, beautiful todo app with notebook-style design" />
     <title>Notebook Todo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Prevent flash of unstyled content */
+      body { 
+        font-family: 'Inter', 'Fredoka', system-ui, sans-serif; 
+        margin: 0; 
+        padding: 0;
+        background: #23281d;
+        color: #e6f2d9;
+        overflow-x: hidden;
+      }
+      /* Loading animation */
+      .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 3px solid #3d4d2e;
+        border-top: 3px solid #b7d89c;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading-spinner"></div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

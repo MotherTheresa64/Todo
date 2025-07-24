@@ -50,84 +50,222 @@ const themeVars = {
 const GlobalStyle = createGlobalStyle`
   body {
     background: ${({ theme }) => theme.bg};
-    font-family: 'Fredoka', Arial, sans-serif;
+    font-family: 'Inter', 'Fredoka', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 `;
+
 const AuthContainer = styled.div`
   background: ${({ theme }) => theme.card};
-  border-radius: 24px;
-  box-shadow: 0 4px 24px ${({ theme }) => theme.cardShadow}, 0 0 0 8px ${({ theme }) => theme.accent}22;
-  max-width: 400px;
-  margin: 80px auto;
-  padding: 40px 32px 32px 32px;
+  border-radius: clamp(20px, 5vw, 28px);
+  box-shadow: 
+    0 20px 64px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: min(420px, calc(100vw - 32px));
+  width: 100%;
+  margin: 0;
+  padding: clamp(32px, 8vw, 48px) clamp(24px, 6vw, 40px) clamp(28px, 7vw, 40px);
   position: relative;
-  font-family: 'Fredoka', Arial, sans-serif;
+  font-family: 'Inter', 'Fredoka', Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+  
+  /* Glass morphism effect */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Smooth entrance animation */
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    max-width: calc(100vw - 16px);
+    border-radius: 20px;
+  }
 `;
 const Heading = styled.h2`
-  margin: 0 0 18px 0;
-  font-size: 2.2em;
+  margin: 0 0 clamp(16px, 4vw, 24px) 0;
+  font-size: clamp(1.8em, 5vw, 2.4em);
   font-weight: 700;
-  color: #3a3a2c;
-  letter-spacing: 1px;
+  color: ${({ theme }) => theme.text};
+  letter-spacing: -0.02em;
+  text-align: center;
 `;
+
 const DoodleIcon = styled.span`
-  font-size: 2.2em;
-  margin-bottom: 10px;
+  font-size: clamp(2em, 6vw, 2.6em);
+  margin-bottom: clamp(8px, 2vw, 12px);
   user-select: none;
+  animation: float 3s ease-in-out infinite;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
 `;
+
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: clamp(16px, 4vw, 20px);
   width: 100%;
 `;
+
 const StyledInput = styled.input`
-  padding: 12px;
+  padding: clamp(14px, 4vw, 18px) clamp(12px, 3vw, 16px);
   border: none;
-  border-radius: 12px;
-  font-size: 1.1em;
-  font-family: inherit;
+  border-radius: clamp(10px, 3vw, 14px);
+  font-size: clamp(1em, 3vw, 1.15em);
+  font-family: 'Inter', inherit;
+  font-weight: 400;
   background: ${({ theme }) => theme.input};
   color: ${({ theme }) => theme.text};
-  box-shadow: 0 1px 2px #b7bfa733;
-`;
-const StyledButton = styled.button`
-  background: #a3c47c;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 0;
-  font-size: 1.1em;
-  font-family: inherit;
-  font-weight: 600;
-  color: #222;
-  box-shadow: 1px 2px 0 #e6e8d3;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover { background: #b7d89c; }
-`;
-const ErrorMsg = styled.p`
-  color: #e57373;
-  font-size: 1em;
-  margin: 0;
-`;
-const SwitchText = styled.p`
-  font-size: 1em;
-  color: #7b8c5c;
-  margin-top: 18px;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:focus {
+    outline: none;
+    box-shadow: 
+      0 4px 16px rgba(183, 216, 156, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  &::placeholder {
+    color: ${({ theme }) => theme.text3};
+    opacity: 0.7;
+  }
 `;
 
-// Add a wrapper to center the signup form
+const StyledButton = styled.button`
+  background: ${({ theme }) => theme.accent};
+  border: none;
+  border-radius: clamp(10px, 3vw, 14px);
+  padding: clamp(14px, 4vw, 18px) 0;
+  font-size: clamp(1.05em, 3vw, 1.2em);
+  font-family: 'Inter', inherit;
+  font-weight: 600;
+  color: #232e1b;
+  box-shadow: 
+    0 4px 16px rgba(183, 216, 156, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  margin-top: clamp(6px, 2vw, 12px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    background: ${({ theme }) => theme.accent2};
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 32px rgba(183, 216, 156, 0.5),
+      0 4px 16px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    transition: transform 0.1s;
+  }
+  
+  /* Ripple effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: width 0.3s, height 0.3s;
+    transform: translate(-50%, -50%);
+  }
+  
+  &:active::before {
+    width: 120%;
+    height: 120%;
+  }
+`;
+
+const ErrorMsg = styled.p`
+  color: #e57373;
+  font-size: clamp(0.9em, 2.5vw, 1em);
+  font-weight: 500;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(229, 115, 115, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid #e57373;
+  animation: shake 0.5s ease-in-out;
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+`;
+
+const SwitchText = styled.p`
+  font-size: clamp(0.95em, 2.5vw, 1.05em);
+  color: ${({ theme }) => theme.text2};
+  margin-top: clamp(16px, 4vw, 24px);
+  text-align: center;
+  
+  a {
+    color: ${({ theme }) => theme.accent};
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: ${({ theme }) => theme.accent2};
+      text-decoration: underline;
+    }
+  }
+`;
+
+// Enhanced wrapper with better mobile support
 const CenteredWrapper = styled.div`
   min-height: 100vh;
-  width: 100vw;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: ${({ theme }) => theme.bg};
+  padding: 16px;
+  box-sizing: border-box;
+  
+  /* Better scroll behavior on mobile */
+  -webkit-overflow-scrolling: touch;
+  
+  @media (max-width: 480px) {
+    padding: 8px;
+    align-items: flex-start;
+    padding-top: clamp(40px, 10vh, 80px);
+  }
 `;
 
 // --- Signup component: handles user registration and error display ---
