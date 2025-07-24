@@ -7,7 +7,7 @@ import Signup from './Signup';
 import TodoPage from './TodoPage';
 import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 // --- Contexts for Auth and Theme ---
 // These provide user authentication state and theme (dark/light) to the whole app
@@ -138,6 +138,22 @@ const ThemeToggleButton = styled.button`
   &:hover { background: #3d4d2e; color: #b7d89c; }
 `;
 
+// New animated background element for subtle movement across the whole app
+const backgroundAnimation = keyframes`
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.15) translate(-5%, -4%); }
+  100% { transform: scale(1) translate(0, 0); }
+`;
+const AnimatedBackground = styled.div`
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle at 20% 30%, #7b8c5c44, transparent 60%),
+              radial-gradient(circle at 80% 70%, #b7d89c55, transparent 60%);
+  animation: ${backgroundAnimation} 18s ease-in-out infinite alternate;
+`;
+
 // --- ProfileAvatar: shows user initial and dropdown for settings/logout ---
 function ProfileAvatar() {
   const { user, logout } = useAuth();
@@ -178,6 +194,7 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <div className="notebook-app" style={{ position: 'relative', minHeight: '100vh' }}>
+            <AnimatedBackground />
             <ProfileContainer>
               <ThemeToggle />
               <ProfileAvatar />

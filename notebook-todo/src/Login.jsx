@@ -64,6 +64,12 @@ const AuthContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  /* Better spacing on small screens */
+  @media (max-width: 480px) {
+    margin: 40px 16px;
+    padding: 32px 20px 24px 20px;
+  }
 `;
 const Heading = styled.h2`
   margin: 0 0 18px 0;
@@ -105,8 +111,14 @@ const StyledButton = styled.button`
   box-shadow: 1px 2px 0 #e6e8d3;
   margin-top: 8px;
   cursor: pointer;
-  transition: background 0.2s;
-  &:hover { background: #b7d89c; }
+  transition: background 0.2s, transform 0.15s;
+  &:hover {
+    background: #b7d89c;
+    transform: translateY(-2px);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 const ErrorMsg = styled.p`
   color: #e57373;

@@ -128,6 +128,16 @@ const TodoCard = styled.div`
   box-shadow: ${({ theme }) => theme.cardShadow};
   background: ${({ theme }) => theme.card};
   border: ${({ theme }) => theme.cardBorder};
+
+  /* Subtle lift on hover for desktop pointers */
+  transition: transform 0.25s, box-shadow 0.25s;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: ${({ theme }) => theme.cardShadow}, 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+  }
+
   @media (max-width: 700px) {
     padding: 18px 8px 32px 8px;
     max-width: 98vw;
