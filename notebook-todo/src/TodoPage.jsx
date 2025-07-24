@@ -652,7 +652,33 @@ const AnimatedFabButton = styled(FabButton)`
   background: ${({ theme }) => theme.fab};
   box-shadow: ${({ theme }) => theme.fabShadow};
   color: #232e1b;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.6em;
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  line-height: 1;
+  font-weight: 700;
+  text-align: center;
   &:hover { background: ${({ theme }) => theme.accent2}; color: #fff; }
+  span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+    font-weight: 700;
+    font-size: 1em;
+  }
 `;
 const Confetti = styled.div`
   position: absolute;
@@ -907,6 +933,50 @@ function TodoPage() {
             <ProgressText style={{ color: vars.text3 }}>{completedCount} of {todos.length} tasks completed</ProgressText>
           </AnimatedCard>
         </CardRow>
+        <AnimatedFabButton
+          onClick={() => setShowFabModal(true)}
+          aria-label="Add Task"
+          title="Add Task"
+          tabIndex={0}
+          theme={vars}
+        >
+          <span>+</span>
+        </AnimatedFabButton>
+        {showFabModal && (
+          <ModalOverlay onClick={() => setShowFabModal(false)} role="dialog" aria-modal="true">
+            <ModalCard onClick={e => e.stopPropagation()}>
+              <ModalClose onClick={() => setShowFabModal(false)} title="Close" aria-label="Close">×</ModalClose>
+              <TodoInputRow onSubmit={e => { handleAdd(e); setShowFabModal(false); }} style={{ display: 'flex' }} aria-label="Add new task (modal)" role="form">
+                <TodoInput
+                  type="text"
+                  placeholder="Write your task here..."
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  aria-label="Task description"
+                  required
+                />
+                <DateInput
+                  type="date"
+                  value={dueDate}
+                  onChange={e => setDueDate(e.target.value)}
+                  title="Due date"
+                  aria-label="Due date"
+                />
+                <PrioritySelect
+                  value={priority}
+                  onChange={e => setPriority(e.target.value)}
+                  title="Priority"
+                  aria-label="Priority"
+                >
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </PrioritySelect>
+                <AddButton type="submit" title="Add task" aria-label="Add task">+</AddButton>
+              </TodoInputRow>
+            </ModalCard>
+          </ModalOverlay>
+        )}
         {/* Main todo card with input, filters, list, and finish day */}
         <AnimatedCard as={TodoCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
           {/* Input row for adding todos */}
@@ -943,50 +1013,6 @@ function TodoPage() {
             </PrioritySelect>
             <AddButton type="submit" title="Add task" aria-label="Add task">+</AddButton>
           </TodoInputRow>
-          {/* Mobile FAB and modal */}
-          <AnimatedFabButton
-            onClick={() => setShowFabModal(true)}
-            aria-label="Add Task"
-            title="Add Task"
-            tabIndex={0}
-          >
-            +
-          </AnimatedFabButton>
-          {showFabModal && (
-            <ModalOverlay onClick={() => setShowFabModal(false)} role="dialog" aria-modal="true">
-              <ModalCard onClick={e => e.stopPropagation()}>
-                <ModalClose onClick={() => setShowFabModal(false)} title="Close" aria-label="Close">×</ModalClose>
-                <TodoInputRow onSubmit={e => { handleAdd(e); setShowFabModal(false); }} style={{ display: 'flex' }} aria-label="Add new task (modal)" role="form">
-                  <TodoInput
-                    type="text"
-                    placeholder="Write your task here..."
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    aria-label="Task description"
-                    required
-                  />
-                  <DateInput
-                    type="date"
-                    value={dueDate}
-                    onChange={e => setDueDate(e.target.value)}
-                    title="Due date"
-                    aria-label="Due date"
-                  />
-                  <PrioritySelect
-                    value={priority}
-                    onChange={e => setPriority(e.target.value)}
-                    title="Priority"
-                    aria-label="Priority"
-                  >
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </PrioritySelect>
-                  <AddButton type="submit" title="Add task" aria-label="Add task">+</AddButton>
-                </TodoInputRow>
-              </ModalCard>
-            </ModalOverlay>
-          )}
           <FilterBar theme={vars} role="group" aria-label="Task filters">
             <div style={{ marginBottom: 10 }}>
               <FilterDropdownLabel theme={vars} htmlFor="status-filter">Status</FilterDropdownLabel>
@@ -1061,7 +1087,7 @@ function TodoPage() {
                       role="button"
                       aria-label={`View details for task: ${todo.text}`}
                     >
-                      <DoodleIcon role="img" aria-label="doodle">🟢</DoodleIcon>
+                      <DoodleIcon role="img" aria-label="leaf">🌿</DoodleIcon>
                       <input
                         type="checkbox"
                         checked={todo.completed}
