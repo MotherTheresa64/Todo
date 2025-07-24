@@ -1,61 +1,66 @@
-// --- Imports: React, routing, Firebase, and styling ---
+// =====================
+// Login.jsx
+// Login form with modern glassy card, lively button, and subtle animation
+// Well-commented and mobile-friendly
+// =====================
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, keyframes } from 'styled-components';
 import { useTheme } from './App';
 
-// Theme variables (copy from TodoPage)
+// --- Theme variables for dark/light mode ---
 const themeVars = {
   dark: {
     bg: '#23281d',
-    card: '#262b21',
-    cardShadow: '0 2px 8px 0 rgba(30,35,25,0.08)',
-    cardBorder: '1px solid rgba(200,220,180,0.09)',
+    card: 'rgba(38, 43, 33, 0.85)',
+    cardShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+    cardBorder: '1.5px solid rgba(200,220,180,0.13)',
     accent: '#b7d89c',
     accent2: '#7b8c5c',
     text: '#e6f2d9',
     text2: '#b7d89c',
     text3: '#a3c47c',
     input: '#232a1e',
-    filter: '#2d3327',
-    filterActive: '#b7d89c',
-    filterText: '#e6f2d9',
     error: '#e57373',
-    fab: '#b7d89c',
-    fabShadow: '0 4px 16px #b7d89c33',
   },
   light: {
     bg: '#f3f2ea',
-    card: '#f7f6f0',
-    cardShadow: '0 2px 8px 0 rgba(50,60,40,0.08)',
-    cardBorder: '1px solid rgba(50,60,40,0.09)',
+    card: 'rgba(255,255,255,0.85)',
+    cardShadow: '0 8px 32px 0 rgba(120, 140, 90, 0.10)',
+    cardBorder: '1.5px solid rgba(50,60,40,0.09)',
     accent: '#7b8c5c',
     accent2: '#a3c47c',
     text: '#232e1b',
     text2: '#7b8c5c',
     text3: '#a3c47c',
     input: '#ecebe3',
-    filter: '#e0e0d2',
-    filterActive: '#7b8c5c',
-    filterText: '#232e1b',
     error: '#e57373',
-    fab: '#b7d89c',
-    fabShadow: '0 4px 16px #b7d89c33',
   }
 };
 
+// --- Global style for background and font ---
 const GlobalStyle = createGlobalStyle`
   body {
     background: ${({ theme }) => theme.bg};
     font-family: 'Fredoka', Arial, sans-serif;
   }
 `;
+
+// --- Subtle card entrance animation ---
+const cardIn = keyframes`
+  from { opacity: 0; transform: translateY(32px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+`;
+
+// --- Glassy card container for the login form ---
 const AuthContainer = styled.div`
   background: ${({ theme }) => theme.card};
   border-radius: 24px;
-  box-shadow: 0 4px 24px ${({ theme }) => theme.cardShadow}, 0 0 0 8px ${({ theme }) => theme.accent}22;
+  box-shadow: ${({ theme }) => theme.cardShadow};
+  border: ${({ theme }) => theme.cardBorder};
   max-width: 400px;
   margin: 80px auto;
   padding: 40px 32px 32px 32px;
@@ -64,7 +69,15 @@ const AuthContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: ${cardIn} 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  @media (max-width: 700px) {
+    margin: 32px 0;
+    padding: 24px 8px 18px 8px;
+    border-radius: 12px;
+  }
 `;
+
+// --- Heading and icon ---
 const Heading = styled.h2`
   margin: 0 0 18px 0;
   font-size: 2.2em;
@@ -77,6 +90,8 @@ const DoodleIcon = styled.span`
   margin-bottom: 10px;
   user-select: none;
 `;
+
+// --- Login form and input styles ---
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
@@ -92,34 +107,51 @@ const StyledInput = styled.input`
   background: ${({ theme }) => theme.input};
   color: ${({ theme }) => theme.text};
   box-shadow: 0 1px 2px #b7bfa733;
+  transition: box-shadow 0.18s;
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.accent2};
+    box-shadow: 0 2px 8px #b7d89c55;
+  }
 `;
+
+// --- Lively, modern button ---
 const StyledButton = styled.button`
-  background: #a3c47c;
+  background: linear-gradient(90deg, #b7d89c 60%, #a3c47c 100%);
   border: none;
   border-radius: 12px;
   padding: 12px 0;
   font-size: 1.1em;
   font-family: inherit;
   font-weight: 600;
-  color: #222;
-  box-shadow: 1px 2px 0 #e6e8d3;
+  color: #232e1b;
+  box-shadow: 0 2px 8px #b7d89c33;
   margin-top: 8px;
   cursor: pointer;
-  transition: background 0.2s;
-  &:hover { background: #b7d89c; }
+  transition: background 0.2s, box-shadow 0.2s, transform 0.13s;
+  &:hover, &:focus {
+    background: linear-gradient(90deg, #a3c47c 60%, #b7d89c 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px #b7d89c55;
+    transform: translateY(-2px) scale(1.04);
+  }
+  &:active {
+    transform: scale(0.97);
+  }
 `;
+
+// --- Error message and switch text ---
 const ErrorMsg = styled.p`
-  color: #e57373;
+  color: ${({ theme }) => theme.error};
   font-size: 1em;
   margin: 0;
 `;
 const SwitchText = styled.p`
   font-size: 1em;
-  color: #7b8c5c;
+  color: ${({ theme }) => theme.text2};
   margin-top: 18px;
 `;
 
-// Add a wrapper to center the login form
+// --- Wrapper to center the login form ---
 const CenteredWrapper = styled.div`
   min-height: 100vh;
   width: 100vw;
@@ -157,19 +189,21 @@ function Login() {
       <GlobalStyle theme={vars} />
       <CenteredWrapper theme={vars}>
         <AuthContainer theme={vars}>
+          {/* Fun icon and heading for a friendly vibe */}
           <DoodleIcon role="img" aria-label="doodle">🌱</DoodleIcon>
           <Heading>Login</Heading>
           <StyledForm onSubmit={handleLogin}>
             <StyledInput type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required theme={vars} />
             <StyledInput type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required theme={vars} />
             <StyledButton type="submit">Login</StyledButton>
-            {error && <ErrorMsg>{error}</ErrorMsg>}
+            {error && <ErrorMsg theme={vars}>{error}</ErrorMsg>}
           </StyledForm>
-          <SwitchText>Don't have an account? <Link to="/signup">Sign up</Link></SwitchText>
+          <SwitchText theme={vars}>Don't have an account? <Link to="/signup">Sign up</Link></SwitchText>
         </AuthContainer>
       </CenteredWrapper>
     </>
   );
 }
+
 // --- Export login page ---
 export default Login; 

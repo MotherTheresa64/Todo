@@ -1,3 +1,8 @@
+// =====================
+// TodoPage.jsx
+// Main todo list page: modern, lively, mobile-friendly, and well-documented
+// =====================
+
 // --- Imports: React, Firebase, and styling tools ---
 // React for UI, hooks for state/effects, styled-components for CSS-in-JS, Firebase for backend
 import React, { useEffect, useState, useRef } from 'react';
@@ -916,15 +921,18 @@ function TodoPage() {
   return (
     <>
       {/* Global styles for theme */}
+      {/* PageContainer wraps the whole page, provides background and layout */}
       <GlobalStyle theme={vars} />
       <PageContainer style={{ background: vars.bg }}>
+        {/* Top row: date and progress cards, animated in */}
         <CardRow>
-          {/* Date and progress cards */}
+          {/* Date card: shows current day, date, and month */}
           <AnimatedCard as={Card} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
             <DateText style={{ color: vars.text2 }}>{day}</DateText>
             <DateCircle style={{ background: vars.accent2, color: vars.text }}>{date}</DateCircle>
             <MonthText style={{ color: vars.text3 }}>{month}</MonthText>
           </AnimatedCard>
+          {/* Progress card: animated progress bar and stats */}
           <AnimatedCard as={ProgressCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
             <ProgressLabel style={{ color: vars.text2 }}>Progression</ProgressLabel>
             <ProgressBarContainer style={{ background: vars.filter }}>
@@ -933,6 +941,7 @@ function TodoPage() {
             <ProgressText style={{ color: vars.text3 }}>{completedCount} of {todos.length} tasks completed</ProgressText>
           </AnimatedCard>
         </CardRow>
+        {/* Floating action button for mobile: opens add task modal */}
         <AnimatedFabButton
           onClick={() => setShowFabModal(true)}
           aria-label="Add Task"
@@ -942,6 +951,7 @@ function TodoPage() {
         >
           <span>+</span>
         </AnimatedFabButton>
+        {/* Modal for adding a new task on mobile */}
         {showFabModal && (
           <ModalOverlay onClick={() => setShowFabModal(false)} role="dialog" aria-modal="true">
             <ModalCard onClick={e => e.stopPropagation()}>
@@ -979,7 +989,7 @@ function TodoPage() {
         )}
         {/* Main todo card with input, filters, list, and finish day */}
         <AnimatedCard as={TodoCard} style={{ background: vars.card, boxShadow: vars.cardShadow, border: vars.cardBorder }} theme={vars}>
-          {/* Input row for adding todos */}
+          {/* Input row for adding todos (hidden on mobile, handled by FAB) */}
           <TodoInputRow
             onSubmit={handleAdd}
             style={{ display: window.innerWidth > 700 ? 'flex' : 'none' }}
@@ -1013,6 +1023,7 @@ function TodoPage() {
             </PrioritySelect>
             <AddButton type="submit" title="Add task" aria-label="Add task">+</AddButton>
           </TodoInputRow>
+          {/* Filter bar for status, date, and priority */}
           <FilterBar theme={vars} role="group" aria-label="Task filters">
             <div style={{ marginBottom: 10 }}>
               <FilterDropdownLabel theme={vars} htmlFor="status-filter">Status</FilterDropdownLabel>
@@ -1059,6 +1070,7 @@ function TodoPage() {
             </div>
           </FilterBar>
           <Divider />
+          {/* Search bar for filtering todos by text */}
           <SearchInput
             type="text"
             placeholder="Search todos..."
@@ -1068,6 +1080,7 @@ function TodoPage() {
             aria-label="Search todos"
           />
           <Divider />
+          {/* Todo list: animated, swipeable, and lively */}
           {filteredTodos.length === 0 ? (
             <EmptyState style={{ color: vars.text2 }}>
               <EmptyEmoji role="img" aria-label="plant">🌱</EmptyEmoji>
@@ -1121,11 +1134,13 @@ function TodoPage() {
                   </CSSTransition>
                 ))}
               </TransitionGroup>
+              {/* Button to clear all completed tasks */}
               <ClearCompletedButton accent={vars.accent} bg={vars.bg} onClick={handleClearCompleted} aria-label="Clear completed tasks">
                 Clear Completed
               </ClearCompletedButton>
             </>
           )}
+          {/* Button to finish the day and show summary */}
           <FinishDayButton style={{ background: vars.accent, color: vars.bg }} aria-label="Finish day" onClick={handleFinishDay}>
             FINISH DAY
           </FinishDayButton>
