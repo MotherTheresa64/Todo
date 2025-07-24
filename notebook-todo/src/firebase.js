@@ -1,4 +1,4 @@
-// Firebase configuration and initialization
+// Firebase configuration and initialization - optimized for tree shaking
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';

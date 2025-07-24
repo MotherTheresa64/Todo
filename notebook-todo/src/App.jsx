@@ -1,13 +1,16 @@
 // --- Imports: React, routing, Firebase, and styling ---
-// Handles app-wide context, routing, and layout
-import React, { useEffect, useState, createContext, useContext } from 'react';
+// Handles app-wide context, routing, and layout with lazy loading
+import React, { useEffect, useState, createContext, useContext, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './Login';
-import Signup from './Signup';
-import TodoPage from './TodoPage';
 import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import styled from 'styled-components';
+
+// Lazy load components for better performance
+const Login = lazy(() => import('./Login'));
+const Signup = lazy(() => import('./Signup'));
+const TodoPage = lazy(() => import('./TodoPage'));
+const PerformanceMonitor = lazy(() => import('./components/PerformanceMonitor'));
 
 // --- Contexts for Auth and Theme ---
 // These provide user authentication state and theme (dark/light) to the whole app
@@ -171,6 +174,17 @@ function ThemeToggle() {
   );
 }
 
+// --- Loading Component for Suspense ---
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2em;
+  color: #b7d89c;
+  font-family: 'Fredoka', Arial, sans-serif;
+`;
+
 // --- App: main app layout and router ---
 function App() {
   return (
@@ -182,12 +196,16 @@ function App() {
               <ThemeToggle />
               <ProfileAvatar />
             </ProfileContainer>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/todos" element={<PrivateRoute><TodoPage /></PrivateRoute>} />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
+            <Suspense fallback={<LoadingSpinner>Loading...</LoadingSpinner>}>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/todos" element={<PrivateRoute><TodoPage /></PrivateRoute>} />
+                <Route path="*" element={<Navigate to="/login" />} />
+              </Routes>
+              {/* Performance monitoring - enable in development */}
+              <PerformanceMonitor enabled={import.meta.env.DEV} />
+            </Suspense>
           </div>
         </AuthProvider>
       </ThemeProvider>

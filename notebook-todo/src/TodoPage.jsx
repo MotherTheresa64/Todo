@@ -1,11 +1,12 @@
 // --- Imports: React, Firebase, and styling tools ---
 // React for UI, hooks for state/effects, styled-components for CSS-in-JS, Firebase for backend
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback, memo } from 'react';
 import styled, { createGlobalStyle, keyframes, css } from 'styled-components';
 import { db } from './firebase';
 import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { useAuth, useTheme } from './App';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { debounce } from './utils/performance';
 
 // --- THEME AND ANIMATION SETUP ---
 // Color palettes for light and dark mode, used throughout the app for a consistent look
@@ -755,7 +756,7 @@ function TodoPage() {
   // Get user and theme context (for authentication and theming)
   const { user } = useAuth();
   const { theme } = useTheme();
-  const vars = themeVars[theme];
+  const vars = useMemo(() => themeVars[theme], [theme]);
 
   // State for todos, input fields, modals, and animations
   const [todos, setTodos] = useState([]); // All todos for the user
@@ -765,6 +766,7 @@ function TodoPage() {
   const [filter, setFilter] = useState('all'); // Task status filter
   const [priorityFilter, setPriorityFilter] = useState('all'); // Priority filter
   const [search, setSearch] = useState(''); // Search text
+  const [debouncedSearch, setDebouncedSearch] = useState(''); // Debounced search text
   const [showFabModal, setShowFabModal] = useState(false); // FAB modal for mobile
   const [detailsTodo, setDetailsTodo] = useState(null); // Task being edited in modal
   const [detailsFields, setDetailsFields] = useState({ text: '', dueDate: '', priority: 'medium', notes: '' });
@@ -782,8 +784,17 @@ function TodoPage() {
     return unsub;
   }, [user]);
 
-  // Add a new todo to Firestore (handles both desktop and mobile add)
-  const handleAdd = async (e) => {
+  // Debounced search effect for better performance
+  useEffect(() => {
+    const debouncedUpdate = debounce((searchTerm) => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    
+    debouncedUpdate(search);
+  }, [search]);
+
+  // Add a new todo to Firestore (handles both desktop and mobile add) - optimized with useCallback
+  const handleAdd = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     await addDoc(collection(db, 'todos'), {
@@ -797,29 +808,29 @@ function TodoPage() {
     setInput('');
     setDueDate('');
     setPriority('medium');
-  };
+  }, [input, dueDate, priority, user.uid]);
 
-  // Toggle completion for a todo, and show confetti if marking as complete
-  const handleToggle = async (id, completed) => {
+  // Toggle completion for a todo, and show confetti if marking as complete - optimized with useCallback
+  const handleToggle = useCallback(async (id, completed) => {
     await updateDoc(doc(db, 'todos', id), { completed: !completed });
     if (!completed) {
       setConfettiTask(id);
       setTimeout(() => setConfettiTask(null), 1000);
     }
-  };
+  }, []);
 
-  // Delete a todo from Firestore
-  const handleDelete = async (id) => {
+  // Delete a todo from Firestore - optimized with useCallback
+  const handleDelete = useCallback(async (id) => {
     await deleteDoc(doc(db, 'todos', id));
-  };
+  }, []);
 
-  // Clear all completed todos
-  const handleClearCompleted = async () => {
+  // Clear all completed todos - optimized with useCallback
+  const handleClearCompleted = useCallback(async () => {
     const completed = todos.filter(t => t.completed);
     for (const todo of completed) {
       await deleteDoc(doc(db, 'todos', todo.id));
     }
-  };
+  }, [todos]);
 
   // --- SWIPE HANDLERS FOR MOBILE ---
   // Allow swipe left/right to delete/complete a task (for mobile UX)
@@ -896,20 +907,23 @@ function TodoPage() {
   }, [detailsTodo]);
 
   // --- FILTER, SEARCH, AND PROGRESS LOGIC ---
-  // Filter todos by status, priority, and search text; calculate progress
-  const filteredTodos = todos.filter(todo => {
-    if (search && !todo.text.toLowerCase().includes(search.toLowerCase())) return false;
-    if (priorityFilter !== 'all' && todo.priority !== priorityFilter) return false;
-    if (filter === 'active') return !todo.completed;
-    if (filter === 'completed') return todo.completed;
-    if (filter === 'today') return isToday(todo.dueDate);
-    if (filter === 'upcoming') return isUpcoming(todo.dueDate);
-    if (filter === 'overdue') return isOverdue(todo.dueDate, todo.completed);
-    return true;
-  });
-  const completedCount = todos.filter(t => t.completed).length;
-  const percent = todos.length ? Math.round((completedCount / todos.length) * 100) : 0;
-  const { day, date, month } = getDayMonthYear();
+  // Filter todos by status, priority, and search text; calculate progress - optimized with useMemo
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      if (debouncedSearch && !todo.text.toLowerCase().includes(debouncedSearch.toLowerCase())) return false;
+      if (priorityFilter !== 'all' && todo.priority !== priorityFilter) return false;
+      if (filter === 'active') return !todo.completed;
+      if (filter === 'completed') return todo.completed;
+      if (filter === 'today') return isToday(todo.dueDate);
+      if (filter === 'upcoming') return isUpcoming(todo.dueDate);
+      if (filter === 'overdue') return isOverdue(todo.dueDate, todo.completed);
+      return true;
+    });
+  }, [todos, debouncedSearch, priorityFilter, filter]);
+
+  const completedCount = useMemo(() => todos.filter(t => t.completed).length, [todos]);
+  const percent = useMemo(() => todos.length ? Math.round((completedCount / todos.length) * 100) : 0, [completedCount, todos.length]);
+  const { day, date, month } = useMemo(() => getDayMonthYear(), []);
 
   // --- RENDER ---
   // Main UI layout: date/progress cards, todo list, modals, etc.
@@ -1078,46 +1092,16 @@ function TodoPage() {
               <TransitionGroup component={TodoList}>
                 {filteredTodos.map(todo => (
                   <CSSTransition key={todo.id} timeout={350} classNames="todo">
-                    <AnimatedTodoItem
-                      style={{ color: vars.text }}
-                      onTouchStart={e => handleTouchStart(e, todo.id)}
-                      onTouchEnd={e => handleTouchEnd(e, todo.id, todo.completed)}
-                      onClick={() => openDetails(todo)}
-                      tabIndex={0}
-                      role="button"
-                      aria-label={`View details for task: ${todo.text}`}
-                    >
-                      <DoodleIcon role="img" aria-label="leaf">🌿</DoodleIcon>
-                      <input
-                        type="checkbox"
-                        checked={todo.completed}
-                        onChange={() => handleToggle(todo.id, todo.completed)}
-                        style={{ marginRight: 12 }}
-                        onClick={e => e.stopPropagation()}
-                        aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
-                        tabIndex={0}
-                      />
-                      <span style={{ flex: 1 }}>
-                        {todo.text}
-                        {todo.dueDate && (
-                          <span style={{ fontSize: '0.9em', color: vars.text3, marginLeft: 8 }}>
-                            📅 {todo.dueDate}
-                          </span>
-                        )}
-                        {todo.priority && (
-                          <span style={{
-                            fontSize: '0.9em',
-                            color: PRIORITY_COLORS[todo.priority],
-                            marginLeft: 8,
-                            fontWeight: 'bold',
-                          }}>
-                            {todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1)}
-                          </span>
-                        )}
-                      </span>
-                      <DeleteButton onClick={e => { e.stopPropagation(); handleDelete(todo.id); }} title="Delete" aria-label="Delete task" tabIndex={0}>×</DeleteButton>
-                      {confettiTask === todo.id && <Confetti>🎉✨</Confetti>}
-                    </AnimatedTodoItem>
+                    <TodoItem
+                      todo={todo}
+                      vars={vars}
+                      onToggle={handleToggle}
+                      onDelete={handleDelete}
+                      onOpenDetails={openDetails}
+                      onTouchStart={handleTouchStart}
+                      onTouchEnd={handleTouchEnd}
+                      confettiTask={confettiTask}
+                    />
                   </CSSTransition>
                 ))}
               </TransitionGroup>
@@ -1218,5 +1202,49 @@ function TodoPage() {
     </>
   );
 }
+// --- Memoized TodoItem Component for Performance ---
+const TodoItem = memo(({ todo, vars, onToggle, onDelete, onOpenDetails, onTouchStart, onTouchEnd, confettiTask }) => (
+  <AnimatedTodoItem
+    style={{ color: vars.text }}
+    onTouchStart={e => onTouchStart(e, todo.id)}
+    onTouchEnd={e => onTouchEnd(e, todo.id, todo.completed)}
+    onClick={() => onOpenDetails(todo)}
+    tabIndex={0}
+    role="button"
+    aria-label={`View details for task: ${todo.text}`}
+  >
+    <DoodleIcon role="img" aria-label="leaf">🌿</DoodleIcon>
+    <input
+      type="checkbox"
+      checked={todo.completed}
+      onChange={() => onToggle(todo.id, todo.completed)}
+      style={{ marginRight: 12 }}
+      onClick={e => e.stopPropagation()}
+      aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
+      tabIndex={0}
+    />
+    <span style={{ flex: 1 }}>
+      {todo.text}
+      {todo.dueDate && (
+        <span style={{ fontSize: '0.9em', color: vars.text3, marginLeft: 8 }}>
+          📅 {todo.dueDate}
+        </span>
+      )}
+      {todo.priority && (
+        <span style={{
+          fontSize: '0.9em',
+          color: PRIORITY_COLORS[todo.priority],
+          marginLeft: 8,
+          fontWeight: 'bold',
+        }}>
+          {todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1)}
+        </span>
+      )}
+    </span>
+    <DeleteButton onClick={e => { e.stopPropagation(); onDelete(todo.id); }} title="Delete" aria-label="Delete task" tabIndex={0}>×</DeleteButton>
+    {confettiTask === todo.id && <Confetti>🎉✨</Confetti>}
+  </AnimatedTodoItem>
+));
+
 // --- Export main page ---
 export default TodoPage; 
