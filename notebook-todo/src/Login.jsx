@@ -4,17 +4,58 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
 import styled, { createGlobalStyle } from 'styled-components';
+import { useTheme } from './App';
+
+// Theme variables (copy from TodoPage)
+const themeVars = {
+  dark: {
+    bg: '#23281d',
+    card: '#262b21',
+    cardShadow: '0 2px 8px 0 rgba(30,35,25,0.08)',
+    cardBorder: '1px solid rgba(200,220,180,0.09)',
+    accent: '#b7d89c',
+    accent2: '#7b8c5c',
+    text: '#e6f2d9',
+    text2: '#b7d89c',
+    text3: '#a3c47c',
+    input: '#232a1e',
+    filter: '#2d3327',
+    filterActive: '#b7d89c',
+    filterText: '#e6f2d9',
+    error: '#e57373',
+    fab: '#b7d89c',
+    fabShadow: '0 4px 16px #b7d89c33',
+  },
+  light: {
+    bg: '#f3f2ea',
+    card: '#f7f6f0',
+    cardShadow: '0 2px 8px 0 rgba(50,60,40,0.08)',
+    cardBorder: '1px solid rgba(50,60,40,0.09)',
+    accent: '#7b8c5c',
+    accent2: '#a3c47c',
+    text: '#232e1b',
+    text2: '#7b8c5c',
+    text3: '#a3c47c',
+    input: '#ecebe3',
+    filter: '#e0e0d2',
+    filterActive: '#7b8c5c',
+    filterText: '#232e1b',
+    error: '#e57373',
+    fab: '#b7d89c',
+    fabShadow: '0 4px 16px #b7d89c33',
+  }
+};
 
 const GlobalStyle = createGlobalStyle`
   body {
-    background: #7b8c5c;
+    background: ${({ theme }) => theme.bg};
     font-family: 'Fredoka', Arial, sans-serif;
   }
 `;
 const AuthContainer = styled.div`
-  background: #fff;
+  background: ${({ theme }) => theme.card};
   border-radius: 24px;
-  box-shadow: 0 4px 24px #b7bfa7aa, 0 0 0 8px #7b8c5c22;
+  box-shadow: 0 4px 24px ${({ theme }) => theme.cardShadow}, 0 0 0 8px ${({ theme }) => theme.accent}22;
   max-width: 400px;
   margin: 80px auto;
   padding: 40px 32px 32px 32px;
@@ -48,8 +89,8 @@ const StyledInput = styled.input`
   border-radius: 12px;
   font-size: 1.1em;
   font-family: inherit;
-  background: #f6f7f2;
-  color: #222;
+  background: ${({ theme }) => theme.input};
+  color: ${({ theme }) => theme.text};
   box-shadow: 0 1px 2px #b7bfa733;
 `;
 const StyledButton = styled.button`
@@ -78,6 +119,16 @@ const SwitchText = styled.p`
   margin-top: 18px;
 `;
 
+// Add a wrapper to center the login form
+const CenteredWrapper = styled.div`
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) => theme.bg};
+`;
+
 // --- Login component: handles user login and error display ---
 function Login() {
   // State for form fields and error message
@@ -85,6 +136,8 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const vars = themeVars[theme];
 
   // Handles login with Firebase Auth
   const handleLogin = async (e) => {
@@ -101,18 +154,20 @@ function Login() {
   // Renders the login form and error messages
   return (
     <>
-      <GlobalStyle />
-      <AuthContainer>
-        <DoodleIcon role="img" aria-label="doodle">🌱</DoodleIcon>
-        <Heading>Login</Heading>
-        <StyledForm onSubmit={handleLogin}>
-          <StyledInput type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-          <StyledInput type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-          <StyledButton type="submit">Login</StyledButton>
-          {error && <ErrorMsg>{error}</ErrorMsg>}
-        </StyledForm>
-        <SwitchText>Don't have an account? <Link to="/signup">Sign up</Link></SwitchText>
-      </AuthContainer>
+      <GlobalStyle theme={vars} />
+      <CenteredWrapper theme={vars}>
+        <AuthContainer theme={vars}>
+          <DoodleIcon role="img" aria-label="doodle">🌱</DoodleIcon>
+          <Heading>Login</Heading>
+          <StyledForm onSubmit={handleLogin}>
+            <StyledInput type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required theme={vars} />
+            <StyledInput type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required theme={vars} />
+            <StyledButton type="submit">Login</StyledButton>
+            {error && <ErrorMsg>{error}</ErrorMsg>}
+          </StyledForm>
+          <SwitchText>Don't have an account? <Link to="/signup">Sign up</Link></SwitchText>
+        </AuthContainer>
+      </CenteredWrapper>
     </>
   );
 }
